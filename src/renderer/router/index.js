@@ -4,11 +4,10 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
+  routes: [{
       path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      name: 'app-main',
+      component: require('@/components/Main').default
     },
     {
       path: '*',

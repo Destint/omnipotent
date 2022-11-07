@@ -2,21 +2,23 @@
 
 > Do you want to do.
 
-#### Build Setup
+#### 开发步骤
 
-``` bash
-# install dependencies
-npm install
+1、安装依赖
 
-# serve with hot reload at localhost:9080
-npm run dev
+# yarn (或 npm install)
 
-# build electron application for production
-npm run build
+2、运行调试
 
+# yarn run dev (或 npm run dev)
+
+3、打包
+
+# yarn run build (或 npm run build)
 
 ```
 
 ---
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+基础框架：https://simulatedgreg.gitbooks.io/electron-vue/content/index.html
+```
