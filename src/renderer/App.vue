@@ -5,11 +5,17 @@
 </template>
 
 <script>
-  export default {
-    name: 'omnipotent'
-  }
+export default {
+  name: "omnipotent",
+};
 </script>
 
 <style>
-  /* CSS */
+/* CSS */
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+}
 </style>
