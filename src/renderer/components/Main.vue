@@ -52,12 +52,18 @@ export default {
       },
       {
         index: 1,
-        funcName: "oneKeyOffDuty",
-        src: "static/img_shutdwon_icon.png",
-        name: "一键下班",
+        funcName: "oneKeyOnDuty",
+        src: "static/img_on_duty_icon.png",
+        name: "一键上班",
       },
       {
         index: 2,
+        funcName: "oneKeyOffDuty",
+        src: "static/img_off_duty_icon.png",
+        name: "一键下班",
+      },
+      {
+        index: 3,
         funcName: "oneKeyRestart",
         src: "static/img_restart_icon.png",
         name: "一键重启",
@@ -127,6 +133,137 @@ export default {
         that.$notify.error({
           title: "调试模式失败",
           message: "请重启程序试试",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 一键上班 */
+    oneKeyOnDuty(_this) {
+      let that = _this;
+
+      try {
+        that.openFeiShu(that);
+        that.openGitHubTool(that);
+        that.openLaya(that);
+        that.openWeChat(that);
+      } catch (error) {
+        console.log("一键上班失败", error);
+        that.$notify.error({
+          title: "一键上班失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 打开飞书 */
+    openFeiShu(_this) {
+      let that = _this;
+
+      try {
+        let command = exec(
+          "C:\\Users\\baison\\AppData\\Local\\Feishu\\Feishu.exe",
+          function (err, stdout, stderr) {
+            if (err || stderr) {
+              console.log("打开飞书失败:" + err + stderr);
+            }
+          }
+        );
+
+        command.stdin.end();
+        command.on("close", function (code) {
+          console.log("openFeiShu", code);
+        });
+      } catch (error) {
+        console.log("打开飞书失败", error);
+        that.$notify.error({
+          title: "打开飞书失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 打开Laya */
+    openLaya(_this) {
+      let that = _this;
+
+      try {
+        let command = exec(
+          "C:\\LayaAirIDE\\LayaAir.exe",
+          function (err, stdout, stderr) {
+            if (err || stderr) {
+              console.log("打开Laya失败:" + err + stderr);
+            }
+          }
+        );
+
+        command.stdin.end();
+        command.on("close", function (code) {
+          console.log("openLaya", code);
+        });
+      } catch (error) {
+        console.log("打开Laya失败", error);
+        that.$notify.error({
+          title: "打开Laya失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 打开代码管理工具 */
+    openGitHubTool(_this) {
+      let that = _this;
+
+      try {
+        let command = exec(
+          "C:\\Users\\baison\\AppData\\Local\\GitHubDesktop\\GitHubDesktop.exe",
+          function (err, stdout, stderr) {
+            if (err || stderr) {
+              console.log("打开代码管理工具失败:" + err + stderr);
+            }
+          }
+        );
+
+        command.stdin.end();
+        command.on("close", function (code) {
+          console.log("openGitHubTool", code);
+        });
+      } catch (error) {
+        console.log("打开代码管理工具失败", error);
+        that.$notify.error({
+          title: "打开代码管理工具失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 打开微信 */
+    openWeChat(_this) {
+      let that = _this;
+
+      try {
+        let command = exec(
+          '"C:\\Program Files (x86)\\Tencent\\WeChat\\WeChat.exe"',
+          function (err, stdout, stderr) {
+            if (err || stderr) {
+              console.log("打开微信失败:" + err + stderr);
+            }
+          }
+        );
+
+        command.stdin.end();
+        command.on("close", function (code) {
+          console.log("openWeChat", code);
+        });
+      } catch (error) {
+        console.log("打开微信失败", error);
+        that.$notify.error({
+          title: "打开微信失败",
+          message: "请打开开发者工具查看原因",
           duration: 0,
         });
       }
