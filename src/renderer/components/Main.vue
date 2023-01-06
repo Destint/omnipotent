@@ -23,6 +23,7 @@
 <script>
 const remote = require("electron").remote;
 const { exec } = require("child_process");
+var refreshTimer; // 刷新时间定时器
 
 export default {
   name: "app-main",
@@ -40,9 +41,7 @@ export default {
 
     that.date = that.getCurrentDate();
     that.time = that.getCurrentTime();
-    setInterval(function () {
-      that.time = that.getCurrentTime();
-    }, 1000);
+    that.startRefreshTime();
     that.functionList = [
       {
         index: 0,
@@ -52,9 +51,9 @@ export default {
       },
       {
         index: 1,
-        funcName: "oneKeyOnDuty",
+        funcName: "oneKeyStartApp",
         src: "static/img_on_duty_icon.png",
-        name: "一键上班",
+        name: "一键启动",
       },
       {
         index: 2,
@@ -108,6 +107,24 @@ export default {
       );
     },
 
+    /** 启用刷新时间的定时器 */
+    startRefreshTime() {
+      let that = this;
+
+      refreshTimer = setInterval(function () {
+        that.date = that.getCurrentDate();
+        that.time = that.getCurrentTime();
+      }, 1000);
+    },
+
+    /** 销毁刷新时间的定时器 */
+    destroyRefreshTime() {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = undefined;
+      }
+    },
+
     /**
      * 点击功能单元事件
      * @param {String} funcName 方法名
@@ -138,131 +155,17 @@ export default {
       }
     },
 
-    /** 一键上班 */
-    oneKeyOnDuty(_this) {
+    /** 一键启动 */
+    oneKeyStartApp(_this) {
       let that = _this;
 
       try {
-        that.openFeiShu(that);
-        that.openGitHubTool(that);
-        that.openLaya(that);
-        that.openWeChat(that);
+        that.destroyRefreshTime();
+        that.$router.replace({ name: "app-oneKeyStart" });
       } catch (error) {
-        console.log("一键上班失败", error);
+        console.log("一键启动失败", error);
         that.$notify.error({
-          title: "一键上班失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
-    },
-
-    /** 打开飞书 */
-    openFeiShu(_this) {
-      let that = _this;
-
-      try {
-        let command = exec(
-          "C:\\Users\\baison\\AppData\\Local\\Feishu\\Feishu.exe",
-          function (err, stdout, stderr) {
-            if (err || stderr) {
-              console.log("打开飞书失败:" + err + stderr);
-            }
-          }
-        );
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("openFeiShu", code);
-        });
-      } catch (error) {
-        console.log("打开飞书失败", error);
-        that.$notify.error({
-          title: "打开飞书失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
-    },
-
-    /** 打开Laya */
-    openLaya(_this) {
-      let that = _this;
-
-      try {
-        let command = exec(
-          "C:\\LayaAirIDE\\LayaAir.exe",
-          function (err, stdout, stderr) {
-            if (err || stderr) {
-              console.log("打开Laya失败:" + err + stderr);
-            }
-          }
-        );
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("openLaya", code);
-        });
-      } catch (error) {
-        console.log("打开Laya失败", error);
-        that.$notify.error({
-          title: "打开Laya失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
-    },
-
-    /** 打开代码管理工具 */
-    openGitHubTool(_this) {
-      let that = _this;
-
-      try {
-        let command = exec(
-          "C:\\Users\\baison\\AppData\\Local\\GitHubDesktop\\GitHubDesktop.exe",
-          function (err, stdout, stderr) {
-            if (err || stderr) {
-              console.log("打开代码管理工具失败:" + err + stderr);
-            }
-          }
-        );
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("openGitHubTool", code);
-        });
-      } catch (error) {
-        console.log("打开代码管理工具失败", error);
-        that.$notify.error({
-          title: "打开代码管理工具失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
-    },
-
-    /** 打开微信 */
-    openWeChat(_this) {
-      let that = _this;
-
-      try {
-        let command = exec(
-          '"C:\\Program Files (x86)\\Tencent\\WeChat\\WeChat.exe"',
-          function (err, stdout, stderr) {
-            if (err || stderr) {
-              console.log("打开微信失败:" + err + stderr);
-            }
-          }
-        );
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("openWeChat", code);
-        });
-      } catch (error) {
-        console.log("打开微信失败", error);
-        that.$notify.error({
-          title: "打开微信失败",
+          title: "一键启动失败",
           message: "请打开开发者工具查看原因",
           duration: 0,
         });

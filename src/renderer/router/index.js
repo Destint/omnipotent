@@ -10,6 +10,11 @@ export default new Router({
       component: require('@/components/Main').default
     },
     {
+      path: '/oneKeyStart',
+      name: 'app-oneKeyStart',
+      component: require('@/components/OneKeyStart').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
