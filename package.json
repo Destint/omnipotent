@@ -2,7 +2,7 @@
   "name": "omnipotent",
   "version": "0.0.1",
   "author": "zhengxj <1124513595@qq.com>",
-  "description": "Do you want to do.",
+  "description": "Freedom.",
   "license": "BSD-2-Clause",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "omnipotent",
+    "productName": "解放双手",
     "appId": "com.trick.omnipotent",
     "directories": {
       "output": "build"

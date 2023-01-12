@@ -6,6 +6,12 @@
         <div v-for="item in startAppList" :key="item.index">
           <div class="text-startApp-name">
             {{ item.index + 1 + "、" + item.name }}
+            <el-image
+              @click="onClickDeleteStartAppCell(item.index)"
+              class="image-delete-icon"
+              src="static/img_delete_icon.png"
+              lazy
+            ></el-image>
           </div>
         </div>
       </div>
@@ -112,16 +118,56 @@ export default {
         let startAppList = localStorage.getItem(startAppListCacheName)
           ? JSON.parse(localStorage.getItem(startAppListCacheName))
           : [];
-        console.log(startAppList);
-        for (let i = 0; i < startAppList.length; i++) {
-          let filePath = startAppList[i].path.replace("\\", "\\\\");
 
-          exec(filePath);
+        if (startAppList.length === 0) {
+          that.$notify({
+            title: "当前无启动项",
+            message: "请点击选择启动项添加",
+            duration: 0,
+          });
+
+          return;
+        }
+        for (let i = 0; i < startAppList.length; i++) {
+          let filePath = startAppList[i].path.replace(/\\/g, "\\\\");
+
+          exec(JSON.stringify(filePath));
         }
       } catch (error) {
         console.log("一键启动报错", error);
         that.$notify.error({
           title: "一键启动失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /**
+     * 点击删除启动项单元
+     * @param {Number} index 启动项列表索引
+     */
+    onClickDeleteStartAppCell(index) {
+      let that = this;
+
+      try {
+        let startAppList = localStorage.getItem(startAppListCacheName)
+          ? JSON.parse(localStorage.getItem(startAppListCacheName))
+          : [];
+
+        startAppList.splice(index, 1);
+        for (let i = 0; i < startAppList.length; i++) {
+          startAppList[i].index = i;
+        }
+        localStorage.setItem(
+          startAppListCacheName,
+          JSON.stringify(startAppList)
+        );
+        that.startAppList = startAppList;
+      } catch (error) {
+        console.log("删除单元启动项报错", error);
+        that.$notify.error({
+          title: "删除单元启动项失败",
           message: "请打开开发者工具查看原因",
           duration: 0,
         });
@@ -163,6 +209,8 @@ export default {
   margin-left: 15px;
   margin-top: 5px;
   color: #467b73;
+  display: flex;
+  align-items: center;
 }
 
 .div-button-area {
@@ -190,6 +238,14 @@ export default {
   position: relative;
   width: 64px;
   height: 64px;
+  flex-shrink: 0;
+}
+
+.image-delete-icon {
+  position: relative;
+  margin-left: 10px;
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 # omnipotent
 
-> Do you want to do.
+> Freedom.
 
 #### 开发步骤
 
