@@ -17,6 +17,7 @@
         </div>
       </div>
     </div>
+    <div class="div-version-area">v0.0.1</div>
   </div>
 </template>
 
@@ -285,5 +286,13 @@ export default {
   color: #467b73;
   font-size: 12px;
   margin-top: 5px;
+}
+
+.div-version-area {
+  position: absolute;
+  color: #467b73;
+  font-size: 15px;
+  bottom: 10px;
+  right: 10px;
 }
 </style>
