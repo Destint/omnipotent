@@ -57,7 +57,45 @@ export default {
   },
   components: {},
   computed: {},
-  mounted() {},
+  mounted() {
+    let that = this;
+    let chooseFile = document.getElementById("chooseFile");
+
+    if (chooseFile) {
+      chooseFile.addEventListener("change", (e) => {
+        let file = e.target.files[0];
+
+        if (file && file.name.indexOf(".exe") != -1) {
+          let startAppList = localStorage.getItem(startAppListCacheName)
+            ? JSON.parse(localStorage.getItem(startAppListCacheName))
+            : [];
+
+          for (let i = 0; i < startAppList.length; i++) {
+            if (
+              startAppList[i].name === file.name.slice(0, file.name.length - 4)
+            )
+              return;
+          }
+          startAppList.push({
+            index: startAppList.length,
+            name: file.name.slice(0, file.name.length - 4),
+            path: file.path,
+          });
+          localStorage.setItem(
+            startAppListCacheName,
+            JSON.stringify(startAppList)
+          );
+          that.startAppList = startAppList;
+        } else {
+          that.$notify.error({
+            title: "选择启动项失败",
+            message: "请选择exe程序",
+            duration: 1500,
+          });
+        }
+      });
+    }
+  },
   methods: {
     /** 点击返回主页 */
     onClickGoHome() {
@@ -73,33 +111,6 @@ export default {
 
         if (!chooseFile) return;
         chooseFile.click();
-        chooseFile.addEventListener("change", (e) => {
-          let file = e.target.files[0];
-
-          if (file && file.name.indexOf(".exe") != -1) {
-            let startAppList = localStorage.getItem(startAppListCacheName)
-              ? JSON.parse(localStorage.getItem(startAppListCacheName))
-              : [];
-
-            for (let i = 0; i < startAppList.length; i++) {
-              if (
-                startAppList[i].name ===
-                file.name.slice(0, file.name.length - 4)
-              )
-                return;
-            }
-            startAppList.push({
-              index: startAppList.length,
-              name: file.name.slice(0, file.name.length - 4),
-              path: file.path,
-            });
-            localStorage.setItem(
-              startAppListCacheName,
-              JSON.stringify(startAppList)
-            );
-            that.startAppList = startAppList;
-          }
-        });
       } catch (error) {
         console.log("选择启动项报错", error);
         that.$notify.error({
@@ -123,7 +134,7 @@ export default {
           that.$notify({
             title: "当前无启动项",
             message: "请点击选择启动项添加",
-            duration: 0,
+            duration: 1500,
           });
 
           return;
