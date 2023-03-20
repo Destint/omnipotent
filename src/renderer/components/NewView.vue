@@ -1,6 +1,6 @@
 <template>
   <div class="div-newView-page">
-    <div class="div-button-area">
+    <div class="div-button-area1">
       <el-button
         class="button-open-newView"
         type="primary"
@@ -45,7 +45,7 @@ export default {
   justify-content: center;
 }
 
-.div-button-area {
+.div-button-area1 {
   position: absolute;
   display: flex;
   top: 150px;

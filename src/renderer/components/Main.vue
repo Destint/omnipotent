@@ -17,6 +17,7 @@
         </div>
       </div>
     </div>
+    <div class="div-work-time-area">上班时间: {{ workTime }}</div>
     <div class="div-version-area">v0.0.1</div>
   </div>
 </template>
@@ -24,6 +25,7 @@
 <script>
 const remote = require("electron").remote;
 const { exec } = require("child_process");
+const startWorkTimeCacheName = "startWorkTime";
 var refreshTimer; // 刷新时间定时器
 
 export default {
@@ -33,6 +35,9 @@ export default {
       date: "",
       time: "",
       functionList: [],
+      workTime: localStorage.getItem(startWorkTimeCacheName)
+        ? localStorage.getItem(startWorkTimeCacheName)
+        : "",
     };
   },
   components: {},
@@ -43,6 +48,7 @@ export default {
     that.date = that.getCurrentDate();
     that.time = that.getCurrentTime();
     that.startRefreshTime();
+    that.checkWorkTime();
     that.functionList = [
       {
         index: 0,
@@ -52,18 +58,24 @@ export default {
       },
       {
         index: 1,
+        funcName: "onClickPunchIn",
+        src: "static/img_punch_in_icon.png",
+        name: "上班打卡",
+      },
+      {
+        index: 2,
         funcName: "oneKeyStartApp",
         src: "static/img_on_duty_icon.png",
         name: "一键启动",
       },
       {
-        index: 2,
+        index: 3,
         funcName: "oneKeyOffDuty",
         src: "static/img_off_duty_icon.png",
         name: "一键下班",
       },
       {
-        index: 3,
+        index: 4,
         funcName: "oneKeyRestart",
         src: "static/img_restart_icon.png",
         name: "一键重启",
@@ -106,6 +118,23 @@ export default {
         ":" +
         ("0" + date.getSeconds()).slice(-2)
       );
+    },
+
+    /** 检测上班时间 */
+    checkWorkTime() {
+      let that = this;
+
+      if (!that.workTime) return;
+      let curDate = that.date;
+      let workTime = that.workTime;
+
+      if (
+        workTime.slice(0, workTime.length - 8) !=
+        curDate.slice(0, curDate.length - 3)
+      ) {
+        that.workTime = "";
+        localStorage.setItem(startWorkTimeCacheName, "");
+      }
     },
 
     /** 启用刷新时间的定时器 */
@@ -156,6 +185,26 @@ export default {
       }
     },
 
+    /** 上班打卡 */
+    onClickPunchIn(_this) {
+      let that = _this;
+
+      try {
+        let date = that.date;
+        let time = that.time;
+
+        that.workTime = date.slice(0, date.length - 3) + time;
+        localStorage.setItem(startWorkTimeCacheName, that.workTime);
+      } catch (error) {
+        console.log("上班打卡失败", error);
+        that.$notify.error({
+          title: "上班打卡失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
     /** 一键启动 */
     oneKeyStartApp(_this) {
       let that = _this;
@@ -178,6 +227,18 @@ export default {
       let that = _this;
 
       try {
+        if (that.workTime) {
+          if (
+            new Date().getTime() - new Date(that.workTime).getTime() <
+            32400000
+          ) {
+            that.$notify({
+              title: "一键下班失败",
+              message: "还没到点呢，亲",
+              duration: 3000,
+            });
+          }
+        }
         let command = exec("shutdown -s -t 0", function (err, stdout, stderr) {
           if (err || stderr) {
             console.log("关机失败:" + err + stderr);
@@ -286,6 +347,14 @@ export default {
   color: #467b73;
   font-size: 12px;
   margin-top: 5px;
+}
+
+.div-work-time-area {
+  position: absolute;
+  color: #467b73;
+  font-size: 15px;
+  bottom: 10px;
+  left: 10px;
 }
 
 .div-version-area {
