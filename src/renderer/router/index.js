@@ -4,7 +4,8 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
-  routes: [{
+  routes: [
+    {
       path: '/',
       name: 'app-main',
       component: require('@/components/Main').default
@@ -13,6 +14,11 @@ export default new Router({
       path: '/oneKeyStart',
       name: 'app-oneKeyStart',
       component: require('@/components/OneKeyStart').default
+    },
+    {
+      path: '/',
+      name: 'app-newView',
+      component: require('@/components/NewView').default
     },
     {
       path: '*',
