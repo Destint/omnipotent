@@ -86,15 +86,7 @@ export default {
     /** 计算当前年月日 */
     getCurrentDate() {
       let date = new Date();
-      let week = [
-        "星期一",
-        "星期二",
-        "星期三",
-        "星期四",
-        "星期五",
-        "星期六",
-        "星期日",
-      ];
+      let week = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
 
       return (
         date.getFullYear() +
@@ -129,8 +121,7 @@ export default {
       let workTime = that.workTime;
 
       if (
-        workTime.slice(0, workTime.length - 8) !=
-        curDate.slice(0, curDate.length - 3)
+        workTime.slice(0, workTime.length - 8) != curDate.slice(0, curDate.length - 3)
       ) {
         that.workTime = "";
         localStorage.setItem(startWorkTimeCacheName, "");
@@ -193,6 +184,19 @@ export default {
         let date = that.date;
         let time = that.time;
 
+        if (that.workTime) {
+          if (
+            that.workTime.slice(0, that.workTime.length - 9) ===
+            date.slice(0, date.length - 4)
+          ) {
+            that.$notify({
+              title: "上班打卡重复",
+              message: "今天已经打过卡了呢，亲~",
+              duration: 0,
+            });
+            return;
+          }
+        }
         that.workTime = date.slice(0, date.length - 3) + time;
         localStorage.setItem(startWorkTimeCacheName, that.workTime);
       } catch (error) {
@@ -228,15 +232,13 @@ export default {
 
       try {
         if (that.workTime) {
-          if (
-            new Date().getTime() - new Date(that.workTime).getTime() <
-            32400000
-          ) {
+          if (new Date().getTime() - new Date(that.workTime).getTime() < 32400000) {
             that.$notify({
               title: "一键下班失败",
-              message: "还没到点呢，亲",
-              duration: 3000,
+              message: "还没到点呢，亲~",
+              duration: 0,
             });
+            return;
           }
         }
         let command = exec("shutdown -s -t 0", function (err, stdout, stderr) {
