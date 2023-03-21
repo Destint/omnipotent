@@ -19,6 +19,17 @@
     </div>
     <div class="div-work-time-area">上班时间: {{ workTime }}</div>
     <div class="div-version-area">v0.0.1</div>
+    <div v-if="showPop" class="div-page-mask">
+      <el-progress type="circle" :percentage="popProgress" status="warning"></el-progress>
+      <div class="div-pop-text">{{ popTip }}</div>
+      <el-button
+        class="button-pop-event"
+        type="warning"
+        round
+        @click="onClickFunctionCell(popEvent)"
+        >取消</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -27,6 +38,7 @@ const remote = require("electron").remote;
 const { exec } = require("child_process");
 const startWorkTimeCacheName = "startWorkTime";
 var refreshTimer; // 刷新时间定时器
+var popTimer; // 弹窗定时器
 
 export default {
   name: "app-main",
@@ -38,6 +50,10 @@ export default {
       workTime: localStorage.getItem(startWorkTimeCacheName)
         ? localStorage.getItem(startWorkTimeCacheName)
         : "",
+      showPop: false,
+      popProgress: 0,
+      popTip: "",
+      popEvent: "",
     };
   },
   components: {},
@@ -241,6 +257,48 @@ export default {
             return;
           }
         }
+        that.showPop = true;
+        that.popTip = "关机倒计时";
+        that.popEvent = "destroyPopTimer";
+        popTimer = setInterval(() => {
+          if (that.popProgress >= 100) {
+            clearInterval(popTimer);
+            popTimer = undefined;
+            that.showPop = false;
+            that.popProgress = 0;
+            that.popTip = "";
+            that.popEvent = "";
+            that.shutdownWindows();
+          }
+          that.popProgress += 10;
+        }, 500);
+      } catch (error) {
+        console.log("一键下班失败", error);
+        that.$notify.error({
+          title: "一键下班失败",
+          message: "请打开开发者工具查看原因",
+          duration: 0,
+        });
+      }
+    },
+
+    /** 取消弹窗定时器 */
+    destroyPopTimer(_this) {
+      let that = _this;
+
+      clearInterval(popTimer);
+      popTimer = undefined;
+      that.showPop = false;
+      that.popProgress = 0;
+      that.popTip = "";
+      that.popEvent = "";
+    },
+
+    /** 关机 */
+    shutdownWindows() {
+      let that = this;
+
+      try {
         let command = exec("shutdown -s -t 0", function (err, stdout, stderr) {
           if (err || stderr) {
             console.log("关机失败:" + err + stderr);
@@ -264,6 +322,27 @@ export default {
     /** 一键重启 */
     oneKeyRestart(_this) {
       let that = _this;
+
+      that.showPop = true;
+      that.popTip = "重启倒计时";
+      that.popEvent = "destroyPopTimer";
+      popTimer = setInterval(() => {
+        if (that.popProgress >= 100) {
+          clearInterval(popTimer);
+          popTimer = undefined;
+          that.showPop = false;
+          that.popProgress = 0;
+          that.popTip = "";
+          that.popEvent = "";
+          that.restartWindows();
+        }
+        that.popProgress += 10;
+      }, 500);
+    },
+
+    /** 重启 */
+    restartWindows() {
+      let that = this;
 
       try {
         let command = exec("shutdown -r -t 0", function (err, stdout, stderr) {
@@ -365,5 +444,29 @@ export default {
   font-size: 15px;
   bottom: 10px;
   right: 10px;
+}
+
+.div-page-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.div-pop-text {
+  position: relative;
+  color: #fff;
+  margin-top: 15px;
+}
+
+.button-pop-event {
+  position: relative;
+  margin-top: 30px;
 }
 </style>
