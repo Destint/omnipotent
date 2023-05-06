@@ -169,171 +169,122 @@ export default {
     onClickEmptyWork() {
       let that = this;
 
-      try {
-        if (!that.timeList || !that.timeList.length) {
-          that.$notify({
-            title: "当前无工作记录",
-            message: "请先开始工作",
-            duration: 1500,
-          });
-          return;
-        }
-        that.timeList = [];
-        localStorage.setItem(timeRecordeCacheName, JSON.stringify(that.timeList));
-      } catch (error) {
-        console.log("清空工作报错", error);
-        that.$notify.error({
-          title: "清空工作失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
+      if (!that.timeList || !that.timeList.length) {
+        that.$notify({
+          title: "当前无工作记录",
+          message: "请先开始工作",
+          duration: 1500,
         });
+        return;
       }
+      that.timeList = [];
+      localStorage.setItem(timeRecordeCacheName, JSON.stringify(that.timeList));
     },
 
     /** 点击开始工作 */
     onClickStartWork() {
       let that = this;
+      let workContent = that.workInput;
 
-      try {
-        let workContent = that.workInput;
-
-        if (!workContent) {
-          that.$notify({
-            title: "当前无工作内容",
-            message: "请先输入工作内容",
-            duration: 1500,
-          });
-          return;
-        }
-        let timeList = that.timeList;
-
-        timeList.push({
-          index: timeList.length,
-          time: that.getCurrentDate() + " " + that.getCurrentTime(),
-          content: workContent,
-          state: 1, // 1 开始 2 暂停 3 继续 4 结束
-          stateDes: "开始",
+      if (!workContent) {
+        that.$notify({
+          title: "当前无工作内容",
+          message: "请先输入工作内容",
+          duration: 1500,
         });
-        that.timeList = timeList;
-        that.workInput = "";
-        localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
-        setTimeout(() => {
-          that.keepBottomDisplay();
-        });
-      } catch (error) {
-        console.log("开始工作报错", error);
-        that.$notify.error({
-          title: "开始工作失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
+        return;
       }
+      let timeList = that.timeList;
+
+      timeList.push({
+        index: timeList.length,
+        time: that.getCurrentDate() + " " + that.getCurrentTime(),
+        content: workContent,
+        state: 1, // 1 开始 2 暂停 3 继续 4 结束
+        stateDes: "开始",
+      });
+      that.timeList = timeList;
+      that.workInput = "";
+      localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
+      setTimeout(() => {
+        that.keepBottomDisplay();
+      });
     },
 
     /** 点击暂停工作 */
     onClickPauseWork() {
       let that = this;
+      let timeList = that.timeList;
+      let currentTime = that.getCurrentDate() + " " + that.getCurrentTime();
+      let sTime = new Date(timeList[timeList.length - 1].time).getTime();
+      let eTime = new Date(currentTime).getTime();
+      let duration = eTime / 1000 - sTime / 1000;
+      let durationDes = that.handleDuration(timeList, duration);
 
-      try {
-        let timeList = that.timeList;
-        let currentTime = that.getCurrentDate() + " " + that.getCurrentTime();
-        let sTime = new Date(timeList[timeList.length - 1].time).getTime();
-        let eTime = new Date(currentTime).getTime();
-        let duration = eTime / 1000 - sTime / 1000;
-        let durationDes = that.handleDuration(timeList, duration);
-
-        timeList.push({
-          index: timeList.length,
-          time: currentTime,
-          content: timeList[timeList.length - 1].content,
-          state: 2,
-          stateDes: "暂停",
-          duration: duration,
-          durationDes: "共计耗时: " + durationDes,
-        });
-        that.timeList = timeList;
-        localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
-        setTimeout(() => {
-          that.keepBottomDisplay();
-        });
-      } catch (error) {
-        console.log("暂停工作报错", error);
-        that.$notify.error({
-          title: "暂停工作失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      timeList.push({
+        index: timeList.length,
+        time: currentTime,
+        content: timeList[timeList.length - 1].content,
+        state: 2,
+        stateDes: "暂停",
+        duration: duration,
+        durationDes: "共计耗时: " + durationDes,
+      });
+      that.timeList = timeList;
+      localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
+      setTimeout(() => {
+        that.keepBottomDisplay();
+      });
     },
 
     /** 点击继续工作 */
     onClickContinueWork() {
       let that = this;
+      let timeList = that.timeList;
 
-      try {
-        let timeList = that.timeList;
-
-        timeList.push({
-          index: timeList.length,
-          time: that.getCurrentDate() + " " + that.getCurrentTime(),
-          content: timeList[timeList.length - 1].content,
-          state: 3,
-          stateDes: "继续",
-        });
-        that.timeList = timeList;
-        localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
-        setTimeout(() => {
-          that.keepBottomDisplay();
-        });
-      } catch (error) {
-        console.log("继续工作报错", error);
-        that.$notify.error({
-          title: "继续工作失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      timeList.push({
+        index: timeList.length,
+        time: that.getCurrentDate() + " " + that.getCurrentTime(),
+        content: timeList[timeList.length - 1].content,
+        state: 3,
+        stateDes: "继续",
+      });
+      that.timeList = timeList;
+      localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
+      setTimeout(() => {
+        that.keepBottomDisplay();
+      });
     },
 
     /** 点击结束工作 */
     onClickFinishWork() {
       let that = this;
+      let timeList = that.timeList;
+      let duration = 0;
+      let durationDes = "";
 
-      try {
-        let timeList = that.timeList;
-        let duration = 0;
-        let durationDes = "";
+      if (timeList[timeList.length - 1].state !== 2) {
+        let currentTime = that.getCurrentDate() + " " + that.getCurrentTime();
+        let sTime = new Date(timeList[timeList.length - 1].time).getTime();
+        let eTime = new Date(currentTime).getTime();
 
-        if (timeList[timeList.length - 1].state !== 2) {
-          let currentTime = that.getCurrentDate() + " " + that.getCurrentTime();
-          let sTime = new Date(timeList[timeList.length - 1].time).getTime();
-          let eTime = new Date(currentTime).getTime();
-
-          duration = eTime / 1000 - sTime / 1000;
-        }
-        durationDes = that.handleDuration(timeList, duration);
-        timeList.push({
-          index: timeList.length,
-          time: that.getCurrentDate() + " " + that.getCurrentTime(),
-          content: timeList[timeList.length - 1].content,
-          state: 4,
-          duration: duration,
-          durationDes: "共计耗时: " + durationDes,
-          stateDes: "结束",
-        });
-        that.timeList = timeList;
-        localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
-        setTimeout(() => {
-          that.keepBottomDisplay();
-        });
-      } catch (error) {
-        console.log("结束工作报错", error);
-        that.$notify.error({
-          title: "结束工作失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
+        duration = eTime / 1000 - sTime / 1000;
       }
+      durationDes = that.handleDuration(timeList, duration);
+      timeList.push({
+        index: timeList.length,
+        time: that.getCurrentDate() + " " + that.getCurrentTime(),
+        content: timeList[timeList.length - 1].content,
+        state: 4,
+        duration: duration,
+        durationDes: "共计耗时: " + durationDes,
+        stateDes: "结束",
+      });
+      that.timeList = timeList;
+      localStorage.setItem(timeRecordeCacheName, JSON.stringify(timeList));
+      setTimeout(() => {
+        that.keepBottomDisplay();
+      });
     },
 
     /** 计算当前工作共计耗时 */

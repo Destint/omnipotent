@@ -176,110 +176,71 @@ export default {
 
     /** 开发者工具 */
     devTools(_this) {
-      let that = _this;
-
-      try {
-        if (remote.getCurrentWebContents().isDevToolsOpened())
-          remote.getCurrentWebContents().closeDevTools();
-        else remote.getCurrentWebContents().openDevTools({ mode: "right" });
-      } catch (error) {
-        console.log("调试模式报错", error);
-        that.$notify.error({
-          title: "调试模式失败",
-          message: "请重启程序试试",
-          duration: 0,
-        });
-      }
+      if (remote.getCurrentWebContents().isDevToolsOpened())
+        remote.getCurrentWebContents().closeDevTools();
+      else remote.getCurrentWebContents().openDevTools({ mode: "right" });
     },
 
     /** 上班打卡 */
     onClickPunchIn(_this) {
       let that = _this;
+      let date = that.date;
+      let time = that.time;
 
-      try {
-        let date = that.date;
-        let time = that.time;
-
-        if (that.workTime) {
-          if (
-            that.workTime.slice(0, that.workTime.length - 9) ===
-            date.slice(0, date.length - 4)
-          ) {
-            that.$notify({
-              title: "上班打卡重复",
-              message: "今天已经打过卡了呢，亲~",
-              duration: 0,
-            });
-            return;
-          }
+      if (that.workTime) {
+        if (
+          that.workTime.slice(0, that.workTime.length - 9) ===
+          date.slice(0, date.length - 4)
+        ) {
+          that.$notify({
+            title: "上班打卡重复",
+            message: "今天已经打过卡了呢，亲~",
+            duration: 0,
+          });
+          return;
         }
-        that.workTime = date.slice(0, date.length - 3) + time;
-        localStorage.setItem(startWorkTimeCacheName, that.workTime);
-      } catch (error) {
-        console.log("上班打卡失败", error);
-        that.$notify.error({
-          title: "上班打卡失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
       }
+      that.workTime = date.slice(0, date.length - 3) + time;
+      localStorage.setItem(startWorkTimeCacheName, that.workTime);
     },
 
     /** 一键启动 */
     oneKeyStartApp(_this) {
       let that = _this;
 
-      try {
-        that.destroyRefreshTime();
-        that.$router.replace({ name: "app-oneKeyStart" });
-      } catch (error) {
-        console.log("一键启动失败", error);
-        that.$notify.error({
-          title: "一键启动失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      that.destroyRefreshTime();
+      that.$router.replace({ name: "app-oneKeyStart" });
     },
 
     /** 一键下班 */
     oneKeyOffDuty(_this) {
       let that = _this;
 
-      try {
-        if (that.workTime) {
-          if (new Date().getTime() - new Date(that.workTime).getTime() < 32400000) {
-            that.$notify({
-              title: "一键下班失败",
-              message: "还没到点呢，亲~",
-              duration: 0,
-            });
-            return;
-          }
+      if (that.workTime) {
+        if (new Date().getTime() - new Date(that.workTime).getTime() < 32400000) {
+          that.$notify({
+            title: "一键下班失败",
+            message: "还没到点呢，亲~",
+            duration: 0,
+          });
+          return;
         }
-        that.showPop = true;
-        that.popTip = "关机倒计时";
-        that.popEvent = "destroyPopTimer";
-        popTimer = setInterval(() => {
-          if (that.popProgress >= 100) {
-            clearInterval(popTimer);
-            popTimer = undefined;
-            that.showPop = false;
-            that.popProgress = 0;
-            that.popTip = "";
-            that.popEvent = "";
-            that.shutdownWindows();
-          }
-          that.popProgress += 10;
-        }, 500);
-      } catch (error) {
-        console.log("一键下班失败", error);
-        that.$notify.error({
-          title: "一键下班失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
       }
+      that.showPop = true;
+      that.popTip = "关机倒计时";
+      that.popEvent = "destroyPopTimer";
+      popTimer = setInterval(() => {
+        if (that.popProgress >= 100) {
+          clearInterval(popTimer);
+          popTimer = undefined;
+          that.showPop = false;
+          that.popProgress = 0;
+          that.popTip = "";
+          that.popEvent = "";
+          that.shutdownWindows();
+        }
+        that.popProgress += 10;
+      }, 500);
     },
 
     /** 取消弹窗定时器 */
@@ -296,44 +257,24 @@ export default {
 
     /** 关机 */
     shutdownWindows() {
-      let that = this;
+      let command = exec("shutdown -s -t 0", function (err, stdout, stderr) {
+        if (err || stderr) {
+          console.log("关机失败:" + err + stderr);
+        }
+      });
 
-      try {
-        let command = exec("shutdown -s -t 0", function (err, stdout, stderr) {
-          if (err || stderr) {
-            console.log("关机失败:" + err + stderr);
-          }
-        });
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("shutdown -s", code);
-        });
-      } catch (error) {
-        console.log("一键下班失败", error);
-        that.$notify.error({
-          title: "一键下班失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      command.stdin.end();
+      command.on("close", function (code) {
+        console.log("shutdown -s", code);
+      });
     },
 
     /** 工时记录 */
     timeRecord(_this) {
       let that = _this;
 
-      try {
-        that.destroyRefreshTime();
-        that.$router.replace({ name: "app-timeRecord" });
-      } catch (error) {
-        console.log("工时记录失败", error);
-        that.$notify.error({
-          title: "工时记录失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      that.destroyRefreshTime();
+      that.$router.replace({ name: "app-timeRecord" });
     },
   },
 };

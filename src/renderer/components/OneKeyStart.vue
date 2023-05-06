@@ -58,11 +58,9 @@ export default {
     if (chooseFile) {
       chooseFile.addEventListener("change", (e) => {
         let file = e.target.files[0];
-
+        console.log("选中的文件", file);
         if (file && file.name.indexOf(".exe") != -1) {
-          let startAppList = localStorage.getItem(startAppListCacheName)
-            ? JSON.parse(localStorage.getItem(startAppListCacheName))
-            : [];
+          let startAppList = that.startAppList;
 
           for (let i = 0; i < startAppList.length; i++) {
             if (startAppList[i].name === file.name.slice(0, file.name.length - 4)) return;
@@ -92,53 +90,33 @@ export default {
 
     /** 点击选择启动项 */
     onClickChooseFile() {
-      let that = this;
+      let chooseFile = document.getElementById("chooseFile");
 
-      try {
-        let chooseFile = document.getElementById("chooseFile");
-
-        if (!chooseFile) return;
-        chooseFile.click();
-      } catch (error) {
-        console.log("选择启动项报错", error);
-        that.$notify.error({
-          title: "选择启动项失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
-      }
+      if (!chooseFile) return;
+      chooseFile.value = "";
+      chooseFile.click();
     },
 
     /** 点击一键启动 */
     onClickOneKeyStart() {
       let that = this;
+      let startAppList = localStorage.getItem(startAppListCacheName)
+        ? JSON.parse(localStorage.getItem(startAppListCacheName))
+        : [];
 
-      try {
-        let startAppList = localStorage.getItem(startAppListCacheName)
-          ? JSON.parse(localStorage.getItem(startAppListCacheName))
-          : [];
-
-        if (startAppList.length === 0) {
-          that.$notify({
-            title: "当前无启动项",
-            message: "请点击选择启动项添加",
-            duration: 1500,
-          });
-
-          return;
-        }
-        for (let i = 0; i < startAppList.length; i++) {
-          let filePath = startAppList[i].path.replace(/\\/g, "\\\\");
-
-          exec(JSON.stringify(filePath));
-        }
-      } catch (error) {
-        console.log("一键启动报错", error);
-        that.$notify.error({
-          title: "一键启动失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
+      if (startAppList.length === 0) {
+        that.$notify({
+          title: "当前无启动项",
+          message: "请点击选择启动项添加",
+          duration: 1500,
         });
+
+        return;
+      }
+      for (let i = 0; i < startAppList.length; i++) {
+        let filePath = startAppList[i].path.replace(/\\/g, "\\\\");
+
+        exec(JSON.stringify(filePath));
       }
     },
 
@@ -148,26 +126,17 @@ export default {
      */
     onClickDeleteStartAppCell(index) {
       let that = this;
+      let startAppList = localStorage.getItem(startAppListCacheName)
+        ? JSON.parse(localStorage.getItem(startAppListCacheName))
+        : [];
 
-      try {
-        let startAppList = localStorage.getItem(startAppListCacheName)
-          ? JSON.parse(localStorage.getItem(startAppListCacheName))
-          : [];
-
-        startAppList.splice(index, 1);
-        for (let i = 0; i < startAppList.length; i++) {
-          startAppList[i].index = i;
-        }
-        localStorage.setItem(startAppListCacheName, JSON.stringify(startAppList));
-        that.startAppList = startAppList;
-      } catch (error) {
-        console.log("删除单元启动项报错", error);
-        that.$notify.error({
-          title: "删除单元启动项失败",
-          message: "请打开开发者工具查看原因",
-          duration: 0,
-        });
+      startAppList.splice(index, 1);
+      for (let i = 0; i < startAppList.length; i++) {
+        startAppList[i].index = i;
       }
+      console.log("删除启动项", startAppList);
+      localStorage.setItem(startAppListCacheName, JSON.stringify(startAppList));
+      that.startAppList = startAppList;
     },
   },
 };
