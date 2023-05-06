@@ -86,15 +86,15 @@ export default {
       },
       {
         index: 3,
-        funcName: "oneKeyOffDuty",
-        src: "static/img_off_duty_icon.png",
-        name: "一键下班",
+        funcName: "timeRecord",
+        src: "static/img_time_record_icon.png",
+        name: "工时记录",
       },
       {
         index: 4,
-        funcName: "oneKeyRestart",
-        src: "static/img_restart_icon.png",
-        name: "一键重启",
+        funcName: "oneKeyOffDuty",
+        src: "static/img_off_duty_icon.png",
+        name: "一键下班",
       },
     ];
   },
@@ -107,7 +107,7 @@ export default {
       return (
         date.getFullYear() +
         "-" +
-        (date.getMonth() + 1) +
+        ("0" + (date.getMonth() + 1)).slice(-2) +
         "-" +
         ("0" + date.getDate()).slice(-2) +
         " " +
@@ -181,7 +181,7 @@ export default {
       try {
         if (remote.getCurrentWebContents().isDevToolsOpened())
           remote.getCurrentWebContents().closeDevTools();
-        else remote.getCurrentWebContents().openDevTools({ mode: "bottom" });
+        else remote.getCurrentWebContents().openDevTools({ mode: "right" });
       } catch (error) {
         console.log("调试模式报错", error);
         that.$notify.error({
@@ -319,46 +319,17 @@ export default {
       }
     },
 
-    /** 一键重启 */
-    oneKeyRestart(_this) {
+    /** 工时记录 */
+    timeRecord(_this) {
       let that = _this;
 
-      that.showPop = true;
-      that.popTip = "重启倒计时";
-      that.popEvent = "destroyPopTimer";
-      popTimer = setInterval(() => {
-        if (that.popProgress >= 100) {
-          clearInterval(popTimer);
-          popTimer = undefined;
-          that.showPop = false;
-          that.popProgress = 0;
-          that.popTip = "";
-          that.popEvent = "";
-          that.restartWindows();
-        }
-        that.popProgress += 10;
-      }, 500);
-    },
-
-    /** 重启 */
-    restartWindows() {
-      let that = this;
-
       try {
-        let command = exec("shutdown -r -t 0", function (err, stdout, stderr) {
-          if (err || stderr) {
-            console.log("重启失败:" + err + stderr);
-          }
-        });
-
-        command.stdin.end();
-        command.on("close", function (code) {
-          console.log("shutdown -r", code);
-        });
+        that.destroyRefreshTime();
+        that.$router.replace({ name: "app-timeRecord" });
       } catch (error) {
-        console.log("一键重启失败", error);
+        console.log("工时记录失败", error);
         that.$notify.error({
-          title: "一键重启失败",
+          title: "工时记录失败",
           message: "请打开开发者工具查看原因",
           duration: 0,
         });

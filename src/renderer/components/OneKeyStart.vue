@@ -18,16 +18,10 @@
       <input type="file" id="chooseFile" style="display: none" />
     </div>
     <div class="div-button-area">
-      <el-button
-        class="button-choose-file"
-        type="primary"
-        @click="onClickChooseFile"
+      <el-button class="button-choose-file" type="primary" @click="onClickChooseFile"
         >选择启动项</el-button
       >
-      <el-button
-        class="button-choose-file"
-        type="success"
-        @click="onClickOneKeyStart"
+      <el-button class="button-choose-file" type="success" @click="onClickOneKeyStart"
         >一键启动</el-button
       >
     </div>
@@ -71,20 +65,14 @@ export default {
             : [];
 
           for (let i = 0; i < startAppList.length; i++) {
-            if (
-              startAppList[i].name === file.name.slice(0, file.name.length - 4)
-            )
-              return;
+            if (startAppList[i].name === file.name.slice(0, file.name.length - 4)) return;
           }
           startAppList.push({
             index: startAppList.length,
             name: file.name.slice(0, file.name.length - 4),
             path: file.path,
           });
-          localStorage.setItem(
-            startAppListCacheName,
-            JSON.stringify(startAppList)
-          );
+          localStorage.setItem(startAppListCacheName, JSON.stringify(startAppList));
           that.startAppList = startAppList;
         } else {
           that.$notify.error({
@@ -170,10 +158,7 @@ export default {
         for (let i = 0; i < startAppList.length; i++) {
           startAppList[i].index = i;
         }
-        localStorage.setItem(
-          startAppListCacheName,
-          JSON.stringify(startAppList)
-        );
+        localStorage.setItem(startAppListCacheName, JSON.stringify(startAppList));
         that.startAppList = startAppList;
       } catch (error) {
         console.log("删除单元启动项报错", error);
@@ -227,7 +212,7 @@ export default {
 .div-button-area {
   position: absolute;
   display: flex;
-  bottom: 150px;
+  bottom: 140px;
   left: 50%;
   transform: translateX(-50%);
 }

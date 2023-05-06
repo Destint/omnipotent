@@ -17,8 +17,8 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'app-newView',
-      component: require('@/components/NewView').default
+      name: 'app-timeRecord',
+      component: require('@/components/TimeRecord').default
     },
     {
       path: '*',

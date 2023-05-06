@@ -22,10 +22,14 @@ function createWindow() {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 667,
-    width: 375,
-    useContentSize: false
+    useContentSize: false,
+    show: false,
+    backgroundColor: '#fbf2e3'
   })
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show();
+  })
+  mainWindow.maximize();
   mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
 
