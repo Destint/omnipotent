@@ -32,7 +32,7 @@
         <el-input
           v-model="workInput"
           placeholder="请输入工作内容"
-          style="width: 200px"
+          style="width: 200px;"
         ></el-input>
         <el-button
           type="primary"
@@ -328,6 +328,8 @@ export default {
   margin-left: 10px;
   margin-top: 10px;
   color: #467b73;
+  user-select: none;
+  cursor: default;
 }
 
 .div-current-timeRecord-list {
@@ -347,6 +349,8 @@ export default {
   color: #467b73;
   display: flex;
   align-items: center;
+  user-select: none;
+  cursor: default;
 }
 
 .div-record-area {
@@ -370,5 +374,6 @@ export default {
   width: 64px;
   height: 64px;
   flex-shrink: 0;
+  user-select: none;
 }
 </style>

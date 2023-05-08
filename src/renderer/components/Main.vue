@@ -212,19 +212,27 @@ export default {
       that.$router.replace({ name: "app-oneKeyStart" });
     },
 
+    /** 检测是否到下班点 */
+    checkOffDutyTime() {
+      let that = this;
+
+      if (!that.workTime) return true;
+      if (new Date().getTime() - new Date(that.workTime).getTime() < 32400000)
+        return false;
+      else return true;
+    },
+
     /** 一键下班 */
     oneKeyOffDuty(_this) {
       let that = _this;
 
-      if (that.workTime) {
-        if (new Date().getTime() - new Date(that.workTime).getTime() < 32400000) {
-          that.$notify({
-            title: "一键下班失败",
-            message: "还没到点呢，亲~",
-            duration: 0,
-          });
-          return;
-        }
+      if (!that.checkOffDutyTime()) {
+        that.$notify({
+          title: "一键下班失败",
+          message: "还没到点呢，亲~",
+          duration: 0,
+        });
+        return;
       }
       that.showPop = true;
       that.popTip = "关机倒计时";
@@ -303,6 +311,8 @@ export default {
   color: #467b73;
   font-size: 20px;
   margin-top: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .div-time-text {
@@ -310,6 +320,8 @@ export default {
   color: #467b73;
   font-size: 80px;
   margin-top: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .div-function-area {
@@ -333,6 +345,7 @@ export default {
   width: 64px;
   height: 64px;
   flex-shrink: 0;
+  user-select: none;
 }
 
 .div-function-cellName {
@@ -340,6 +353,8 @@ export default {
   color: #467b73;
   font-size: 12px;
   margin-top: 5px;
+  user-select: none;
+  cursor: default;
 }
 
 .div-work-time-area {
@@ -348,6 +363,8 @@ export default {
   font-size: 15px;
   bottom: 10px;
   left: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .div-version-area {
@@ -356,6 +373,8 @@ export default {
   font-size: 15px;
   bottom: 10px;
   right: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .div-page-mask {

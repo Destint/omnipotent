@@ -166,6 +166,8 @@ export default {
   margin-left: 10px;
   margin-top: 10px;
   color: #467b73;
+  user-select: none;
+  cursor: default;
 }
 
 .text-startApp-name {
@@ -176,6 +178,8 @@ export default {
   color: #467b73;
   display: flex;
   align-items: center;
+  user-select: none;
+  cursor: default;
 }
 
 .div-button-area {
@@ -204,6 +208,7 @@ export default {
   width: 64px;
   height: 64px;
   flex-shrink: 0;
+  user-select: none;
 }
 
 .image-delete-icon {
@@ -212,5 +217,6 @@ export default {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
+  user-select: none;
 }
 </style>
